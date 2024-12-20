@@ -18,7 +18,7 @@ export default class Queue {
   enqueue(element, priority) {
     let queueElement = new QueueElement(element, priority);
     let contain = false;
-    for (let i = 0; i < this.items.length; index++) {
+    for (let i = 0; i < this.items.length; i++) {
       if (this.items[i].priority > queueElement.priority) {
         this.items.splice(i, 0, queueElement);
         contain = true;
@@ -89,8 +89,8 @@ export default class Queue {
   dumpList() {
     let str = "";
     for (let i = 0; i < this.items.length; i++) {
-      str += this.items[i].element + " ";
-      return str;
+      str += `element: ${this.items[i].element.x}, ${this.items[i].element.y} priority: ${this.items[i].priority}  `;
     }
+    console.log(str);
   }
 }
