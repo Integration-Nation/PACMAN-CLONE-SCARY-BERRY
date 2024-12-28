@@ -1,0 +1,32 @@
+body {
+  background-color: #666;
+  color: #6b6;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#grid {
+  display: grid;
+  border-left: 1px dashed darkgray;
+  border-top: 1px dashed darkgray;
+  width: fit-content;
+}
+
+.cell {
+  width: 30px;
+  aspect-ratio: 1 / 1;
+  background-color: #080505;
+  border-right: 1px dashed darkgray;
+  border-bottom: 1px dashed darkgray;
+}
+
+.player {
+  background-color: rgb(203, 237, 51);
+}
+
+.wall {
+  background-color: #0316bd;
+}
+
+.enemy {
+  background-color: rgb(184, 10, 13);
+}

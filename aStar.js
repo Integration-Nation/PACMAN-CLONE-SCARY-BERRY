@@ -1,18 +1,39 @@
-import Queue from "./priorityQueue";
+import Queue from "./priorityQueue.js";
+
 const start = { x: 0, y: 0 };
 const end = { x: 9, y: 9 };
 
-function aStar(start, end, h) {
+function aStar(start, end, h, neighbours) {
   let priorityQueue = Queue();
+  priorityQueue.enqueue(start, h(start, goal));
+
   let gScore = new Map();
-  let fScore = new Map();
   gScore.set(start, 0);
+
+  let fScore = new Map();
   fScore.set(start, h(start, goal));
 
-  while (priorityQueue.length > 0) {
+  while (!priorityQueue.isEmpty()) {
     let current = priorityQueue.front();
     priorityQueue.dequeue();
   }
+
+  for (const neighbour of neighbours(current)) {
+    const tentativeGScore = gScore.get(current) + 1;
+
+    if (!gScore.has(neighbour) || tentativeScore < gScore.get(neighbour)) {
+      gScore.set(neighbour, tentativeGscore);
+      const tentativeFScore = tentativeGScore + h(neighbour, goal);
+      fScore.set(neighbour, tentativeFScore);
+
+      if (!priorityQueue.includes(neighbour)) {
+        priorityQueue.enqueue(neighbour, tentativeFScore);
+      } else {
+        priorityQueue.update(neighbour, tentativeFScore);
+      }
+    }
+  }
+  return null;
 }
 
 function heuristic(a, b) {
