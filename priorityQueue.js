@@ -13,7 +13,18 @@ export default class Queue {
   // ========================================
   // metoder der behandler data objekter
   // ========================================
+  includes(element) {
+    return this.items.includes(element);
+  }
 
+  update = (element, priority) => {
+    for (let i = 0; i < this.items.length; i++) {
+      if (this.items[i].element === element) {
+        this.items[i].priority = priority;
+        break;
+      }
+    }
+  };
   // tilføjer et element til slutningen af listen
   enqueue(element, priority) {
     let queueElement = new QueueElement(element, priority);

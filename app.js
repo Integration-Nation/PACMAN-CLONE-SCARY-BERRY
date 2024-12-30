@@ -36,6 +36,8 @@ function spawnEnemy() {
   grid.set({ row: 10, col: 9, value: 2 });
 }
 
+function tick() {}
+
 //* View
 
 function generateBoard() {
