@@ -1,8 +1,8 @@
 "use strict";
 
-import Queue from "./priorityQueue.js";
 import Grid from "./grid.js";
 import { wallList } from "./wall.js";
+import { aStar } from "./aStar.js";
 
 window.addEventListener("load", start);
 
@@ -17,26 +17,43 @@ function start() {
   spawnPlayer();
   spawnEnemy();
   generateBoard();
-  displayBoard();
+  tick();
+  //setInterval(tick, 1000);
 }
 
-//* Controller
+//* Controller *//
+function tick() {
+  if (!playerPosition || !enemyPosition) return;
+
+  const path = aStar(enemyPosition, playerPosition, (current) => grid.neighbours(current));
+
+  console.log(path);
+
+  if (path && path.length > 1) {
+    const nextStep = path[1]; // Spring første trin over, da det er nuværende position
+    grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 0 }); // Ryd gammel position
+    grid.set({ row: nextStep.row, col: nextStep.col, value: 2 }); // Indstil ny position
+    enemyPosition = { row: nextStep.row, col: nextStep.col }; // Opdater global position
+  }
+
+  displayBoard();
+}
 
 //* Model
 
 const grid = new Grid(21, 21);
 
-const priorityQueue = new Queue();
+let playerPosition = { row: 15, col: 10 };
+
+let enemyPosition = { row: 10, col: 9 };
 
 function spawnPlayer() {
-  grid.set({ row: 15, col: 10, value: 3 });
+  grid.set({ row: playerPosition.row, col: playerPosition.col, value: 3 });
 }
 
 function spawnEnemy() {
-  grid.set({ row: 10, col: 9, value: 2 });
+  grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 2 });
 }
-
-function tick() {}
 
 //* View
 
@@ -48,7 +65,6 @@ function generateBoard() {
       "beforeend",
       /*html*/
       `
-      
         <div class="cell"></div>
         `
     );
@@ -66,13 +82,10 @@ function displayBoard() {
 
       switch (grid.get({ row, col })) {
         case 0:
-          console.log(grid.get({ row, col }));
           cells[index].classList.add("wall");
           break;
-        case 1: // Note: doesn't remove goal if previously set
-          console.log(grid.get({ row, col }));
+        case 1:
           cells[index].classList.remove("wall");
-          console.log("wall");
           break;
         case 2:
           cells[index].classList.add("enemy");
