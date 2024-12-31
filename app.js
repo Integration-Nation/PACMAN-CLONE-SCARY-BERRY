@@ -14,38 +14,116 @@ function start() {
       value: 1,
     });
   }
+
   spawnPlayer();
   spawnEnemy();
   generateBoard();
+  document.addEventListener("keydown", keyDown);
+
   tick();
-  //setInterval(tick, 1000);
 }
 
 //* Controller *//
-function tick() {
+async function tick() {
   if (!playerPosition || !enemyPosition) return;
 
-  const path = aStar(enemyPosition, playerPosition, (current) => grid.neighbours(current));
-
-  console.log(path);
+  const path = aStar(
+    enemyPosition,
+    playerPosition,
+    (current) => grid.neighbours(current),
+    (neighbour) => grid.get(neighbour)
+  );
 
   if (path && path.length > 1) {
-    const nextStep = path[1]; // Spring første trin over, da det er nuværende position
-    grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 0 }); // Ryd gammel position
-    grid.set({ row: nextStep.row, col: nextStep.col, value: 2 }); // Indstil ny position
-    enemyPosition = { row: nextStep.row, col: nextStep.col }; // Opdater global position
+    const nextStep = path[1];
+
+    moveEnemy(nextStep);
+    movePlayer();
+    displayBoard();
   }
 
-  displayBoard();
+  await sleep(400);
+  tick();
+
+  console.log(path);
 }
 
+function moveEnemy(nextStep) {
+  console.log("moveEnemy", nextStep);
+  console.log("enemyPosition", enemyPosition);
+
+  grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 1 }); //
+  grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
+  enemyPosition = { row: nextStep.row, col: nextStep.col };
+}
+
+function movePlayer() {
+  let oldPosition = { row: playerPosition.row, col: playerPosition.col };
+  let newPlayerPosition = { row: playerPosition.row, col: playerPosition.col };
+  switch (direction) {
+    case "left":
+      console.log("movePlayer", direction);
+
+      newPlayerPosition.col--;
+      if (newPlayerPosition.col < 0) {
+        newPlayerPosition.col = grid.getCols() - 1;
+      }
+      break;
+    case "right":
+      newPlayerPosition.col++;
+      if (newPlayerPosition.col > grid.getCols() - 1) {
+        newPlayerPosition.col = 0;
+      }
+      break;
+    case "down":
+      newPlayerPosition.row++;
+      if (newPlayerPosition.row > grid.getRows() - 1) {
+        newPlayerPosition.row = 0;
+      }
+      break;
+    case "up":
+      newPlayerPosition.row--;
+      if (newPlayerPosition.row < 0) {
+        newPlayerPosition.row = grid.getRows() - 1;
+      }
+  }
+  if (grid.get(newPlayerPosition) === 0) {
+    return;
+  }
+  grid.set({ row: oldPosition.row, col: oldPosition.col, value: 1 });
+  grid.set({ row: newPlayerPosition.row, col: newPlayerPosition.col, value: 3 });
+  playerPosition = { row: newPlayerPosition.row, col: newPlayerPosition.col };
+}
+
+function keyDown(event) {
+  switch (event.key) {
+    case "ArrowLeft":
+    case "a":
+      direction = "left";
+      break;
+    case "ArrowRight":
+    case "d":
+      direction = "right";
+      break;
+    case "ArrowUp":
+    case "w":
+      direction = "up";
+      break;
+    case "ArrowDown":
+    case "s":
+      direction = "down";
+      break;
+  }
+}
 //* Model
 
-const grid = new Grid(21, 21);
+const grid = new Grid(23, 23);
 
-let playerPosition = { row: 15, col: 10 };
+let playerPosition = { row: 16, col: 11 };
 
-let enemyPosition = { row: 10, col: 9 };
+let enemyPosition = { row: 11, col: 10 };
+
+let direction = "right";
 
 function spawnPlayer() {
   grid.set({ row: playerPosition.row, col: playerPosition.col, value: 3 });
@@ -53,6 +131,10 @@ function spawnPlayer() {
 
 function spawnEnemy() {
   grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 2 });
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 //* View
@@ -82,15 +164,26 @@ function displayBoard() {
 
       switch (grid.get({ row, col })) {
         case 0:
+          cells[index].classList.remove("enemy");
+          cells[index].classList.remove("player");
           cells[index].classList.add("wall");
+
           break;
         case 1:
           cells[index].classList.remove("wall");
+          cells[index].classList.remove("enemy");
+          cells[index].classList.remove("player");
+
           break;
         case 2:
+          cells[index].classList.remove("wall");
+          cells[index].classList.remove("player");
           cells[index].classList.add("enemy");
+
           break;
         case 3:
+          cells[index].classList.remove("enemy");
+          cells[index].classList.remove("wall");
           cells[index].classList.add("player");
           break;
       }
