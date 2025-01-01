@@ -40,16 +40,28 @@ body {
 }
 
 #character {
-  background-color: rgb(255, 238, 0); /* Or use background-image for a sprite */
+background-image: url("./assets/pac.png");
+background-size: 32px 32px;
   z-index: 3;
 }
 
 #enemy1,
 #enemy2 {
-  background-color: red;
+  background-size: 32px 32px;
   z-index: 2;
 }
 
+#enemy1 {
+  background-image: url("./assets/ghost2.png");
+}
+
+#enemy2 {
+  background-image: url("./assets/ghost1.png");
+}
+
+#enemy3 {
+  background-image: url("./assets/ghost3.png");
+}
 #character,
 #enemy1,
 #enemy2 {
