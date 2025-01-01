@@ -5,28 +5,57 @@ body {
 }
 
 #grid {
+  position: relative;
   display: grid;
-  border-left: 1px dashed darkgray;
-  border-top: 1px dashed darkgray;
+
   width: fit-content;
 }
 
 .cell {
-  width: 30px;
+  width: 32px;
   aspect-ratio: 1 / 1;
-  background-color: #080505;
-  border-right: 1px dashed darkgray;
-  border-bottom: 1px dashed darkgray;
+  background-size: 736px 928px; /* Full tileset size */
 }
 
 .player {
   background-color: rgb(203, 237, 51);
+  grid-row: var(--row);
+  grid-column: var(--col);
+  transition: grid-row 0.4s linear, grid-column 0.4s linear;
+  z-index: 2;
+}
+
+.path {
+  background-image: url("./assets/32x32.png");
+  background-position: -32px -64px;
 }
 
 .wall {
-  background-color: #0316bd;
+  background-image: url("./assets/32x32.png");
+  background-position: -96px -32px;
 }
 
 .enemy {
   background-color: rgb(184, 10, 13);
+}
+
+#character {
+  background-color: rgb(255, 238, 0); /* Or use background-image for a sprite */
+  z-index: 3;
+}
+
+#enemy1,
+#enemy2 {
+  background-color: red;
+  z-index: 2;
+}
+
+#character,
+#enemy1,
+#enemy2 {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  transition: transform 0.2s linear;
+  pointer-events: none;
 }

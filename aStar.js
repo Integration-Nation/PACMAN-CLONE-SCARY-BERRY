@@ -28,8 +28,6 @@ export function aStar(start, goal, getNeighbours, getValue) {
     }
 
     for (const neighbour of getNeighbours(current.element)) {
-      console.log(getValue(neighbour));
-
       if (getValue(neighbour) === 0 || getValue(neighbour) === undefined) {
         continue;
       }

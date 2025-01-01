@@ -6,6 +6,17 @@ import { aStar } from "./aStar.js";
 
 window.addEventListener("load", start);
 
+const grid = new Grid(23, 23);
+
+let playerPosition = { row: 16, col: 11 };
+
+let enemyPosition = { row: 10, col: 10 };
+let enemyPosition2 = { row: 12, col: 12 };
+
+let direction = "right";
+
+let tickCount = 0;
+
 function start() {
   for (const wall of wallList) {
     grid.set({
@@ -27,34 +38,51 @@ function start() {
 async function tick() {
   if (!playerPosition || !enemyPosition) return;
 
+  movePlayer();
+  moveEnemy();
+
+  displayBoard();
+
+  tickCount++;
+  console.log("tickCount", tickCount);
+
+  await sleep(200);
+  tick();
+
+  console.log(path);
+}
+
+function moveEnemy() {
   const path = aStar(
     enemyPosition,
     playerPosition,
     (current) => grid.neighbours(current),
     (neighbour) => grid.get(neighbour)
   );
-
   if (path && path.length > 1) {
     const nextStep = path[1];
 
-    moveEnemy(nextStep);
-    movePlayer();
-    displayBoard();
+    grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 1 }); //
+    grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
+    enemyPosition = { row: nextStep.row, col: nextStep.col };
+  }
+  if (tickCount > 10) {
+    const path2 = aStar(
+      enemyPosition2,
+      playerPosition,
+      (current) => grid.neighbours(current),
+      (neighbour) => grid.get(neighbour)
+    );
+    if (path2 && path2.length > 1) {
+      const nextStep = path2[1];
+
+      grid.set({ row: enemyPosition2.row, col: enemyPosition2.col, value: 1 }); //
+      grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
+      enemyPosition2 = { row: nextStep.row, col: nextStep.col };
+    }
   }
 
-  await sleep(400);
-  tick();
-
-  console.log(path);
-}
-
-function moveEnemy(nextStep) {
-  console.log("moveEnemy", nextStep);
-  console.log("enemyPosition", enemyPosition);
-
-  grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 1 }); //
-  grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
-  enemyPosition = { row: nextStep.row, col: nextStep.col };
+  displayBoard();
 }
 
 function movePlayer() {
@@ -117,14 +145,6 @@ function keyDown(event) {
 }
 //* Model
 
-const grid = new Grid(23, 23);
-
-let playerPosition = { row: 16, col: 11 };
-
-let enemyPosition = { row: 11, col: 10 };
-
-let direction = "right";
-
 function spawnPlayer() {
   grid.set({ row: playerPosition.row, col: playerPosition.col, value: 3 });
 }
@@ -152,40 +172,46 @@ function generateBoard() {
     );
   }
 
+  board.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div id="character"></div>
+    <div id="enemy1"></div>
+    <div id="enemy2"></div>
+    `
+  );
+
   board.style.gridTemplateColumns = `repeat(${grid.getCols()}, 1fr)`;
   board.style.gridTemplateRows = `repeat(${grid.getRows()}, 1fr)`;
 }
 
 function displayBoard() {
   const cells = document.querySelectorAll("#grid .cell");
+  const cellSize = cells[0].offsetWidth;
+
   for (let row = 0; row < grid.getRows(); row++) {
     for (let col = 0; col < grid.getCols(); col++) {
       const index = row * grid.getCols() + col;
+      const value = grid.get({ row, col });
 
-      switch (grid.get({ row, col })) {
-        case 0:
-          cells[index].classList.remove("enemy");
-          cells[index].classList.remove("player");
-          cells[index].classList.add("wall");
+      cells[index].classList.toggle("wall", value === 0);
+      cells[index].classList.toggle("path", value === 1);
 
-          break;
-        case 1:
-          cells[index].classList.remove("wall");
-          cells[index].classList.remove("enemy");
-          cells[index].classList.remove("player");
+      const character = document.querySelector("#character");
+      const enemy1 = document.querySelector("#enemy1");
+      const enemy2 = document.querySelector("#enemy2");
 
-          break;
-        case 2:
-          cells[index].classList.remove("wall");
-          cells[index].classList.remove("player");
-          cells[index].classList.add("enemy");
+      // Update positions
+      if (character) {
+        character.style.transform = `translate(${playerPosition.col * cellSize}px, ${playerPosition.row * cellSize}px)`;
+      }
 
-          break;
-        case 3:
-          cells[index].classList.remove("enemy");
-          cells[index].classList.remove("wall");
-          cells[index].classList.add("player");
-          break;
+      if (enemy1) {
+        enemy1.style.transform = `translate(${enemyPosition.col * cellSize}px, ${enemyPosition.row * cellSize}px)`;
+      }
+
+      if (enemy2 && tickCount > 10) {
+        enemy2.style.transform = `translate(${enemyPosition2.col * cellSize}px, ${enemyPosition2.row * cellSize}px)`;
       }
     }
   }
