@@ -1,5 +1,5 @@
 body {
-  background-color: #666;
+  background-color: #85727d;
   color: #6b6;
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -14,16 +14,12 @@ body {
 .cell {
   width: 32px;
   aspect-ratio: 1 / 1;
-  background-size: 736px 928px; /* Full tileset size */
+  background-size: 736px 928px; 
+  background-image: url("./assets/32x32.png");
+  background-position: -32px -64px;
 }
 
-.player {
-  background-color: rgb(203, 237, 51);
-  grid-row: var(--row);
-  grid-column: var(--col);
-  transition: grid-row 0.4s linear, grid-column 0.4s linear;
-  z-index: 2;
-}
+
 
 .path {
   background-image: url("./assets/32x32.png");
@@ -68,6 +64,6 @@ background-size: 32px 32px;
   position: absolute;
   width: 30px;
   height: 30px;
-  transition: transform 0.2s linear;
+  transition: transform 0.1s linear;
   pointer-events: none;
 }

@@ -46,10 +46,8 @@ async function tick() {
   tickCount++;
   console.log("tickCount", tickCount);
 
-  await sleep(200);
+  await sleep(100);
   tick();
-
-  console.log(path);
 }
 
 function moveEnemy() {
@@ -66,7 +64,7 @@ function moveEnemy() {
     grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
     enemyPosition = { row: nextStep.row, col: nextStep.col };
   }
-  if (tickCount > 10) {
+  if (tickCount > 20) {
     const path2 = aStar(
       enemyPosition2,
       playerPosition,
@@ -83,6 +81,28 @@ function moveEnemy() {
   }
 
   displayBoard();
+}
+
+function keyDown(event) {
+  oldDirection = direction;
+  switch (event.key) {
+    case "ArrowLeft":
+    case "a":
+      direction = "left";
+      break;
+    case "ArrowRight":
+    case "d":
+      direction = "right";
+      break;
+    case "ArrowUp":
+    case "w":
+      direction = "up";
+      break;
+    case "ArrowDown":
+    case "s":
+      direction = "down";
+      break;
+  }
 }
 
 function movePlayer() {
@@ -116,7 +136,10 @@ function movePlayer() {
   }
 
   if (grid.get(newPlayerPosition) === 0) {
-    direction = oldDirection;
+    if (direction !== oldDirection) {
+      direction = oldDirection;
+      movePlayer();
+    }
 
     return;
   }
@@ -124,28 +147,6 @@ function movePlayer() {
   grid.set({ row: oldPosition.row, col: oldPosition.col, value: 1 });
   grid.set({ row: newPlayerPosition.row, col: newPlayerPosition.col, value: 3 });
   playerPosition = { row: newPlayerPosition.row, col: newPlayerPosition.col };
-}
-
-function keyDown(event) {
-  oldDirection = direction;
-  switch (event.key) {
-    case "ArrowLeft":
-    case "a":
-      direction = "left";
-      break;
-    case "ArrowRight":
-    case "d":
-      direction = "right";
-      break;
-    case "ArrowUp":
-    case "w":
-      direction = "up";
-      break;
-    case "ArrowDown":
-    case "s":
-      direction = "down";
-      break;
-  }
 }
 
 //* Model
