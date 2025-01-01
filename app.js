@@ -14,6 +14,7 @@ let enemyPosition = { row: 10, col: 10 };
 let enemyPosition2 = { row: 12, col: 12 };
 
 let direction = "right";
+let oldDirection = "right";
 
 let tickCount = 0;
 
@@ -40,7 +41,6 @@ async function tick() {
 
   movePlayer();
   moveEnemy();
-
   displayBoard();
 
   tickCount++;
@@ -88,10 +88,9 @@ function moveEnemy() {
 function movePlayer() {
   let oldPosition = { row: playerPosition.row, col: playerPosition.col };
   let newPlayerPosition = { row: playerPosition.row, col: playerPosition.col };
+
   switch (direction) {
     case "left":
-      console.log("movePlayer", direction);
-
       newPlayerPosition.col--;
       if (newPlayerPosition.col < 0) {
         newPlayerPosition.col = grid.getCols() - 1;
@@ -115,15 +114,20 @@ function movePlayer() {
         newPlayerPosition.row = grid.getRows() - 1;
       }
   }
+
   if (grid.get(newPlayerPosition) === 0) {
+    direction = oldDirection;
+
     return;
   }
+
   grid.set({ row: oldPosition.row, col: oldPosition.col, value: 1 });
   grid.set({ row: newPlayerPosition.row, col: newPlayerPosition.col, value: 3 });
   playerPosition = { row: newPlayerPosition.row, col: newPlayerPosition.col };
 }
 
 function keyDown(event) {
+  oldDirection = direction;
   switch (event.key) {
     case "ArrowLeft":
     case "a":
@@ -143,8 +147,8 @@ function keyDown(event) {
       break;
   }
 }
-//* Model
 
+//* Model
 function spawnPlayer() {
   grid.set({ row: playerPosition.row, col: playerPosition.col, value: 3 });
 }
