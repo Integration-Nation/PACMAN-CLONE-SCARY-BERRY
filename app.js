@@ -273,21 +273,15 @@ function displayBoard() {
 
       // Update positions
       if (character) {
-        character.style.transform = `translate(${
-          playerPosition.col * cellSize
-        }px, ${playerPosition.row * cellSize}px)`;
+        character.style.transform = `translate(${playerPosition.col * cellSize}px, ${playerPosition.row * cellSize}px)`;
       }
 
       if (enemy1) {
-        enemy1.style.transform = `translate(${
-          enemyPosition1.col * cellSize
-        }px, ${enemyPosition1.row * cellSize}px)`;
+        enemy1.style.transform = `translate(${enemyPosition1.col * cellSize}px, ${enemyPosition1.row * cellSize}px)`;
       }
 
       if (enemy2) {
-        enemy2.style.transform = `translate(${
-          enemyPosition2.col * cellSize
-        }px, ${enemyPosition2.row * cellSize}px)`;
+        enemy2.style.transform = `translate(${enemyPosition2.col * cellSize}px, ${enemyPosition2.row * cellSize}px)`;
       }
     }
   }
