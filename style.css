@@ -22,7 +22,7 @@ body {
 
 .path {
   background-image: url("./assets/32x32.png");
-  background-position: calc(-32px) calc(-2 * 32px);
+  background-position: calc(-1 * 32px) calc(-2 * 32px);
   /* filter: saturate(0.5); */
 }
 
@@ -30,6 +30,11 @@ body {
   background-image: url("./assets/32x32.png"), url("./assets/32x32.png");
   background-position: calc(-2 * 32px) calc(-10 * 32px), -32px -64px;
   filter: saturate(1);
+}
+
+.point {
+  background-image: url("./assets/point.png");
+  background-size: 272px 300px;
 }
 
 .enemy {

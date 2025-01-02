@@ -1,7 +1,7 @@
 "use strict";
 
 import Grid from "./grid.js";
-import { wallList } from "./wall.js";
+import { pathList } from "./path.js";
 import { aStar } from "./aStar.js";
 
 window.addEventListener("load", start);
@@ -10,20 +10,22 @@ const grid = new Grid(23, 23);
 
 let playerPosition = { row: 16, col: 11 };
 
-let enemyPosition1 = { row: 10, col: 10 };
-let enemyPosition2 = { row: 12, col: 12 };
+let enemyPosition1 = { row: 10, col: 10, valueBeforeStep: 2 };
+let enemyPosition2 = { row: 12, col: 12, valueBeforeStep: 2 };
 
 let direction = "right";
 let oldDirection = "right";
 
 let tickCount = 0;
 
+let points = 0;
+
 function start() {
-  for (const wall of wallList) {
+  for (const path of pathList) {
     grid.set({
-      row: wall.row,
-      col: wall.col,
-      value: 1,
+      row: path.row,
+      col: path.col,
+      value: 4,
     });
   }
 
@@ -45,7 +47,7 @@ async function tick() {
   displayBoard();
 
   tickCount++;
-  console.log("tickCount", tickCount);
+  // console.log("tickCount", tickCount);
 
   await sleep(200);
   tick();
@@ -63,9 +65,25 @@ function moveEnemy() {
       const nextStep = path[1];
       let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition1);
 
-      grid.set({ row: enemyPosition1.row, col: enemyPosition1.col, value: 1 }); //
+      if (enemyPosition1.valueBeforeStep === 4) {
+        grid.set({
+          row: enemyPosition1.row,
+          col: enemyPosition1.col,
+          value: 4,
+        });
+      } else {
+        grid.set({
+          row: enemyPosition1.row,
+          col: enemyPosition1.col,
+          value: 1,
+        });
+      }
+      enemyPosition1 = {
+        row: nextStep.row,
+        col: nextStep.col,
+        valueBeforeStep: grid.get({ row: nextStep.row, col: nextStep.col }),
+      };
       grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
-      enemyPosition1 = { row: nextStep.row, col: nextStep.col };
       startPeopleAnimation(enemyDirection, "#enemy1");
     }
   }
@@ -79,9 +97,26 @@ function moveEnemy() {
     if (path2 && path2.length > 1) {
       const nextStep = path2[1];
       let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition2);
-      grid.set({ row: enemyPosition2.row, col: enemyPosition2.col, value: 1 }); //
+      if (enemyPosition2.valueBeforeStep === 4) {
+        grid.set({
+          row: enemyPosition2.row,
+          col: enemyPosition2.col,
+          value: 4,
+        });
+      } else {
+        grid.set({
+          row: enemyPosition2.row,
+          col: enemyPosition2.col,
+          value: 1,
+        });
+      }
+      enemyPosition2 = {
+        row: nextStep.row,
+        col: nextStep.col,
+        valueBeforeStep: grid.get({ row: nextStep.row, col: nextStep.col }),
+      };
       grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
-      enemyPosition2 = { row: nextStep.row, col: nextStep.col };
+
       startPeopleAnimation(enemyDirection, "#enemy2");
     }
   }
@@ -164,6 +199,10 @@ function movePlayer() {
     return;
   }
 
+  if (grid.get(newPlayerPosition) === 4) {
+    countPoints();
+  }
+
   grid.set({ row: oldPosition.row, col: oldPosition.col, value: 1 });
   grid.set({
     row: newPlayerPosition.row,
@@ -179,6 +218,11 @@ function movePlayer() {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+function countPoints() {
+  points += 100;
+  // document.querySelector("#score").textContent = points;
+  console.log("points", points);
 }
 
 //* View
@@ -217,9 +261,11 @@ function displayBoard() {
     for (let col = 0; col < grid.getCols(); col++) {
       const index = row * grid.getCols() + col;
       const value = grid.get({ row, col });
+      const cell = cells[index];
 
-      cells[index].classList.toggle("wall", value === 0);
-      cells[index].classList.toggle("path", value === 1);
+      cell.classList.toggle("wall", value === 0);
+      cell.classList.toggle("path", value === 1);
+      cell.classList.toggle("point", value === 4);
 
       const character = document.querySelector("#character");
       const enemy1 = document.querySelector("#enemy1");

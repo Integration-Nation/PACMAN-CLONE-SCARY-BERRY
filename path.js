@@ -1,16 +1,18 @@
-export const wallList = [
-  // Outer walls (border)
+export const pathList = [
+  // Outer paths (border)
   ...Array.from({ length: 21 }, (_, i) => ({ row: 1, col: i + 1 })),
   ...Array.from({ length: 21 }, (_, i) => ({ row: 21, col: i + 1 })),
   ...Array.from({ length: 19 }, (_, i) => ({ row: i + 2, col: 1 })),
   ...Array.from({ length: 19 }, (_, i) => ({ row: i + 2, col: 21 })),
 
-  // Vertical walls creating symmetrical lanes
+  // Vertical paths creating symmetrical lanes
   ...Array.from({ length: 19 }, (_, i) => ({ row: i + 2, col: 6 })),
-  ...Array.from({ length: 19 }, (_, i) => (i + 2 === 13 && 11 === 11 ? null : { row: i + 2, col: 11 })).filter(Boolean),
+  ...Array.from({ length: 19 }, (_, i) =>
+    i + 2 === 13 && 11 === 11 ? null : { row: i + 2, col: 11 }
+  ).filter(Boolean),
   ...Array.from({ length: 19 }, (_, i) => ({ row: i + 2, col: 16 })),
 
-  // Horizontal walls creating symmetrical lanes
+  // Horizontal paths creating symmetrical lanes
   ...Array.from({ length: 21 }, (_, i) => ({ row: 6, col: i + 1 })),
   ...Array.from({ length: 21 }, (_, i) => ({ row: 11, col: i + 1 })),
   ...Array.from({ length: 21 }, (_, i) => ({ row: 16, col: i + 1 })),
@@ -25,7 +27,7 @@ export const wallList = [
   { row: 12, col: 11 },
   { row: 12, col: 12 },
 
-  // Additional walls for complexity
+  // Additional paths for complexity
   ...Array.from({ length: 5 }, (_, i) => ({ row: 8, col: i + 7 })),
   ...Array.from({ length: 5 }, (_, i) => ({ row: 14, col: i + 7 })),
   ...Array.from({ length: 5 }, (_, i) => ({ row: 8, col: i + 12 })),
