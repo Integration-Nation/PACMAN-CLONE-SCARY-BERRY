@@ -10,8 +10,9 @@ const grid = new Grid(23, 23);
 
 let playerPosition = { row: 16, col: 11 };
 
-let enemyPosition1 = { row: 10, col: 10, valueBeforeStep: 2 };
-let enemyPosition2 = { row: 12, col: 12, valueBeforeStep: 2 };
+let enemyPosition1 = { row: 10, col: 10, valueBeforeStep: 4 };
+let enemyPosition2 = { row: 12, col: 12, valueBeforeStep: 4 };
+let enemySpeed = 300;
 
 let direction = "right";
 let oldDirection = "right";
@@ -32,20 +33,18 @@ function start() {
   generateBoard();
   document.addEventListener("keydown", keyDown);
 
+  setInterval(() => {
+    moveEnemy();
+    console.log("enemySpeed i start", enemySpeed);
+  }, enemySpeed);
   tick();
 }
 
 //* Controller *//
 async function tick() {
   if (!playerPosition || !enemyPosition1) return;
-  let enemySpeed = 2;
-  if (points > 9999) {
-    enemySpeed = 1;
-  }
+
   movePlayer();
-  if (tickCount % enemySpeed === 0) {
-    moveEnemy();
-  }
 
   displayBoard();
 
@@ -224,8 +223,24 @@ function sleep(ms) {
 }
 function countPoints() {
   points += 100;
-  // document.querySelector("#score").textContent = points;
-  console.log("points", points);
+
+  if (points == 6000) {
+    enemySpeed = 50;
+  }
+  if (points == 12000) {
+    enemySpeed = 200;
+
+    console.log("enemySpeed", enemySpeed);
+  }
+  if (points == 18000) {
+    enemySpeed = 100;
+    console.log("enemySpeed", enemySpeed);
+  }
+
+  //document.querySelector("#enemy1").style.transition = `transform ${enemySpeed}ms linear`;
+  //document.querySelector("#enemy2").style.transition = `transform ${enemySpeed}ms linear`;
+
+  document.querySelector("#score").textContent = points;
 }
 
 //* View

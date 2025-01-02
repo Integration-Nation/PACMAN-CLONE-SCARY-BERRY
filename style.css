@@ -50,6 +50,8 @@ body {
   background-image: url("./assets/strawberry.png");
   background-size: 400% 400%;
   z-index: 3;
+  transition: transform 0.2s linear;
+
 }
 
 #enemy1,
@@ -57,6 +59,8 @@ body {
   z-index: 2;
   background-image: url("./assets/character_base_16x16.png");
   background-size: 400% 400%;
+  transition: transform 50ms linear;
+
 }
 
 #enemy1 {
@@ -70,8 +74,8 @@ body {
   position: absolute;
   width: 30px;
   height: 30px;
-  transition: transform 0.2s linear;
   pointer-events: none;
+
 }
 
 .peopleMoveright,
