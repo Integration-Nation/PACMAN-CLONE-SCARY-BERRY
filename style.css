@@ -17,16 +17,19 @@ body {
   background-size: 736px 928px;
   background-image: url("./assets/32x32.png");
   background-position: -32px -64px;
+  filter: saturate(0.5);
 }
 
 .path {
   background-image: url("./assets/32x32.png");
   background-position: calc(-32px) calc(-2 * 32px);
+  /* filter: saturate(0.5); */
 }
 
 .wall {
-  background-image: url("./assets/32x32.png");
-  background-position: calc(-3 * 32px) calc(-1 * 32px);
+  background-image: url("./assets/32x32.png"), url("./assets/32x32.png");
+  background-position: calc(-2 * 32px) calc(-10 * 32px), -32px -64px;
+  filter: saturate(1);
 }
 
 .enemy {
@@ -34,28 +37,23 @@ body {
 }
 
 #character {
-  background-image: url("./assets/character_base_16x16.png");
+  background-image: url("./assets/strawberry.png");
   background-size: 400% 400%;
   z-index: 3;
 }
 
 #enemy1,
 #enemy2 {
-  background-size: 32px 32px;
   z-index: 2;
+  background-image: url("./assets/character_base_16x16.png");
+  background-size: 400% 400%;
 }
 
 #enemy1 {
-  background-image: url("./assets/ghost2.png");
+  filter: saturate(2.5);
+  /* filter: brightness(0.8); */
 }
 
-#enemy2 {
-  background-image: url("./assets/ghost1.png");
-}
-
-#enemy3 {
-  background-image: url("./assets/ghost3.png");
-}
 #character,
 #enemy1,
 #enemy2 {
@@ -66,38 +64,42 @@ body {
   pointer-events: none;
 }
 
-.playerMoveright {
+.peopleMoveright,
+.berryMoveleft {
   background-position: 0 -200%;
-  animation-name: right;
-  animation-duration: 1.5s;
+  animation-name: people-right-berry-left;
+  animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-timing-function: steps(3);
 }
-.playerMoveleft {
+.peopleMoveleft,
+.berryMoveup {
   background-position: 0% -300%;
-  animation-name: left;
+  animation-name: people-left-berry-up;
   animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-timing-function: steps(3);
 }
 
-.playerMoveup {
+.peopleMoveup,
+.berryMoveright {
   background-position: 0% -100%;
-  animation-name: up;
-  animation-duration: 1.5s;
+  animation-name: people-up-berry-right;
+  animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-timing-function: steps(3);
 }
 
-.playerMovedown {
+.peopleMovedown,
+.berryMovedown {
   background-position: 0% 0%;
   animation-name: down;
-  animation-duration: 1.5s;
+  animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-timing-function: steps(3);
 }
 
-@keyframes right {
+@keyframes people-right-berry-left {
   0% {
     background-position: 0% -200%;
   }
@@ -113,7 +115,7 @@ body {
   }
 }
 
-@keyframes left {
+@keyframes people-left-berry-up {
   0% {
     background-position: 0% -300%;
   }
@@ -129,7 +131,7 @@ body {
   }
 }
 
-@keyframes up {
+@keyframes people-up-berry-right {
   0% {
     background-position: 0% -100%;
   }

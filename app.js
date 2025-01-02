@@ -10,7 +10,7 @@ const grid = new Grid(23, 23);
 
 let playerPosition = { row: 16, col: 11 };
 
-let enemyPosition = { row: 10, col: 10 };
+let enemyPosition1 = { row: 10, col: 10 };
 let enemyPosition2 = { row: 12, col: 12 };
 
 let direction = "right";
@@ -27,8 +27,6 @@ function start() {
     });
   }
 
-  spawnPlayer();
-  spawnEnemy();
   generateBoard();
   document.addEventListener("keydown", keyDown);
 
@@ -37,7 +35,7 @@ function start() {
 
 //* Controller *//
 async function tick() {
-  if (!playerPosition || !enemyPosition) return;
+  if (!playerPosition || !enemyPosition1) return;
 
   movePlayer();
   if (tickCount % 2 === 0) {
@@ -56,17 +54,19 @@ async function tick() {
 function moveEnemy() {
   if (tickCount > 10) {
     const path = aStar(
-      enemyPosition,
+      enemyPosition1,
       playerPosition,
       (current) => grid.neighbours(current),
       (neighbour) => grid.get(neighbour)
     );
     if (path && path.length > 1) {
       const nextStep = path[1];
+      let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition1);
 
-      grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 1 }); //
+      grid.set({ row: enemyPosition1.row, col: enemyPosition1.col, value: 1 }); //
       grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
-      enemyPosition = { row: nextStep.row, col: nextStep.col };
+      enemyPosition1 = { row: nextStep.row, col: nextStep.col };
+      startPeopleAnimation(enemyDirection, "#enemy1");
     }
   }
   if (tickCount > 30) {
@@ -78,14 +78,29 @@ function moveEnemy() {
     );
     if (path2 && path2.length > 1) {
       const nextStep = path2[1];
-
+      let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition2);
       grid.set({ row: enemyPosition2.row, col: enemyPosition2.col, value: 1 }); //
       grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
       enemyPosition2 = { row: nextStep.row, col: nextStep.col };
+      startPeopleAnimation(enemyDirection, "#enemy2");
     }
   }
 
   displayBoard();
+}
+
+function calculateEnemyDirection(nextStep, enemyPosition) {
+  let enemyDirection;
+  if (nextStep.row > enemyPosition.row) {
+    enemyDirection = "down";
+  } else if (nextStep.row < enemyPosition.row) {
+    enemyDirection = "up";
+  } else if (nextStep.col > enemyPosition.col) {
+    enemyDirection = "right";
+  } else if (nextStep.col < enemyPosition.col) {
+    enemyDirection = "left";
+  }
+  return enemyDirection;
 }
 
 function keyDown(event) {
@@ -150,20 +165,17 @@ function movePlayer() {
   }
 
   grid.set({ row: oldPosition.row, col: oldPosition.col, value: 1 });
-  grid.set({ row: newPlayerPosition.row, col: newPlayerPosition.col, value: 3 });
+  grid.set({
+    row: newPlayerPosition.row,
+    col: newPlayerPosition.col,
+    value: 3,
+  });
   playerPosition = { row: newPlayerPosition.row, col: newPlayerPosition.col };
 
-  startMovementAnimation(direction);
+  startBerryAnimation(direction);
 }
 
 //* Model
-function spawnPlayer() {
-  grid.set({ row: playerPosition.row, col: playerPosition.col, value: 3 });
-}
-
-function spawnEnemy() {
-  grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 2 });
-}
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -215,24 +227,38 @@ function displayBoard() {
 
       // Update positions
       if (character) {
-        character.style.transform = `translate(${playerPosition.col * cellSize}px, ${playerPosition.row * cellSize}px)`;
+        character.style.transform = `translate(${
+          playerPosition.col * cellSize
+        }px, ${playerPosition.row * cellSize}px)`;
       }
 
       if (enemy1) {
-        enemy1.style.transform = `translate(${enemyPosition.col * cellSize}px, ${enemyPosition.row * cellSize}px)`;
+        enemy1.style.transform = `translate(${
+          enemyPosition1.col * cellSize
+        }px, ${enemyPosition1.row * cellSize}px)`;
       }
 
       if (enemy2) {
-        enemy2.style.transform = `translate(${enemyPosition2.col * cellSize}px, ${enemyPosition2.row * cellSize}px)`;
+        enemy2.style.transform = `translate(${
+          enemyPosition2.col * cellSize
+        }px, ${enemyPosition2.row * cellSize}px)`;
       }
     }
   }
 }
 
-function startMovementAnimation(direction) {
+function startPeopleAnimation(direction, enemy) {
+  const person = document.querySelector(`${enemy}`);
+
+  person.setAttribute("class", "");
+
+  person.classList.add(`peopleMove${direction}`);
+}
+
+function startBerryAnimation(direction) {
   const visualPlayer = document.querySelector("#character");
   visualPlayer.setAttribute("class", "");
-  visualPlayer.classList.add(`playerMove${direction}`);
+  visualPlayer.classList.add(`berryMove${direction}`);
 }
 
 function stopMovementAnimation(direction) {
