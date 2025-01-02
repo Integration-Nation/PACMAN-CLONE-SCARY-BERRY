@@ -1,5 +1,9 @@
 # PACMAN-CLONE
 
+-overvej -2 i wall (anden værdi)
+
+- kig på if rundt om move enemy
+
 - fixe at karakteren ik stopper op når man trykker en tast der ik er mulig (x)
 - fixe den der grå celle foran karakteren (x)
 - få overlay til at matche hitbox (+)
@@ -7,8 +11,6 @@
 - Fix at spørgelserne laver moshpit
 - fix at paccy ændrer retning når han rammer en væg
 - animationer på karakterene
-
-
 
 - fixe at spøgelses hastighed incrementer
 - tilføj point system

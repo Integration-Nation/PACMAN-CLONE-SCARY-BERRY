@@ -40,31 +40,36 @@ async function tick() {
   if (!playerPosition || !enemyPosition) return;
 
   movePlayer();
-  moveEnemy();
+  if (tickCount % 2 === 0) {
+    moveEnemy();
+  }
+
   displayBoard();
 
   tickCount++;
   console.log("tickCount", tickCount);
 
-  await sleep(100);
+  await sleep(200);
   tick();
 }
 
 function moveEnemy() {
-  const path = aStar(
-    enemyPosition,
-    playerPosition,
-    (current) => grid.neighbours(current),
-    (neighbour) => grid.get(neighbour)
-  );
-  if (path && path.length > 1) {
-    const nextStep = path[1];
+  if (tickCount > 10) {
+    const path = aStar(
+      enemyPosition,
+      playerPosition,
+      (current) => grid.neighbours(current),
+      (neighbour) => grid.get(neighbour)
+    );
+    if (path && path.length > 1) {
+      const nextStep = path[1];
 
-    grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 1 }); //
-    grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
-    enemyPosition = { row: nextStep.row, col: nextStep.col };
+      grid.set({ row: enemyPosition.row, col: enemyPosition.col, value: 1 }); //
+      grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
+      enemyPosition = { row: nextStep.row, col: nextStep.col };
+    }
   }
-  if (tickCount > 20) {
+  if (tickCount > 30) {
     const path2 = aStar(
       enemyPosition2,
       playerPosition,
@@ -147,6 +152,8 @@ function movePlayer() {
   grid.set({ row: oldPosition.row, col: oldPosition.col, value: 1 });
   grid.set({ row: newPlayerPosition.row, col: newPlayerPosition.col, value: 3 });
   playerPosition = { row: newPlayerPosition.row, col: newPlayerPosition.col };
+
+  startMovementAnimation(direction);
 }
 
 //* Model
@@ -215,9 +222,21 @@ function displayBoard() {
         enemy1.style.transform = `translate(${enemyPosition.col * cellSize}px, ${enemyPosition.row * cellSize}px)`;
       }
 
-      if (enemy2 && tickCount > 10) {
+      if (enemy2) {
         enemy2.style.transform = `translate(${enemyPosition2.col * cellSize}px, ${enemyPosition2.row * cellSize}px)`;
       }
     }
   }
+}
+
+function startMovementAnimation(direction) {
+  const visualPlayer = document.querySelector("#character");
+  visualPlayer.setAttribute("class", "");
+  visualPlayer.classList.add(`playerMove${direction}`);
+}
+
+function stopMovementAnimation(direction) {
+  const visualPlayer = document.querySelector("#character");
+  visualPlayer.setAttribute("class", "");
+  visualPlayer.classList.add(`playerLook${direction}`);
 }
