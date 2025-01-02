@@ -33,8 +33,9 @@ body {
 }
 
 .point {
-  background-image: url("./assets/point.png");
-  background-size: 272px 300px;
+  background-image: url("./assets/coins.png"), url("./assets/32x32.png");
+  background-position: calc(-1 * 32px) calc(-1 * 32px), -32px -64px;
+  background-size: 256px 32px, 736px 928px;
 }
 
 .enemy {
