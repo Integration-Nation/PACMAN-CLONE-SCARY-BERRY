@@ -38,9 +38,12 @@ function start() {
 //* Controller *//
 async function tick() {
   if (!playerPosition || !enemyPosition1) return;
-
+  let enemySpeed = 2;
+  if (points > 9999) {
+    enemySpeed = 1;
+  }
   movePlayer();
-  if (tickCount % 2 === 0) {
+  if (tickCount % enemySpeed === 0) {
     moveEnemy();
   }
 
@@ -87,7 +90,7 @@ function moveEnemy() {
       startPeopleAnimation(enemyDirection, "#enemy1");
     }
   }
-  if (tickCount > 30) {
+  if (points > 2400) {
     const path2 = aStar(
       enemyPosition2,
       playerPosition,
