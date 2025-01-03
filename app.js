@@ -13,14 +13,20 @@ let playerPosition = { row: 16, col: 11 };
 
 let enemyPosition1 = { row: 10, col: 10, valueBeforeStep: 4 };
 let enemyPosition2 = { row: 12, col: 12, valueBeforeStep: 4 };
-let enemySpeed = 300;
+let enemySpeed = 350;
 let enemyInterval;
 let direction = "right";
 let oldDirection = "right";
 let tickCount = 0;
 let points = 0;
+let highscore = 0;
 
 function start() {
+  if (localStorage.getItem("highscore")) {
+    highscore = localStorage.getItem("highscore");
+    document.querySelector("#high-score").textContent = highscore;
+  }
+
   for (const path of pathList) {
     grid.set({
       row: path.row,
@@ -31,10 +37,14 @@ function start() {
 
   generateBoard();
   document.addEventListener("keydown", keyDown);
+  document.querySelector("#start-button").addEventListener("click", startGame);
+  document
+    .querySelector("#restart-button")
+    .addEventListener("click", restartGame);
 
-  startEnemySpeed();
-
-  tick();
+  // Show start screen
+  document.querySelector("#start-screen").style.display = "flex";
+  displayBoard();
 }
 
 //* Controller *//
@@ -47,11 +57,11 @@ async function tick() {
     (playerPosition.row === enemyPosition2.row &&
       playerPosition.col === enemyPosition2.col)
   ) {
-    loseGame();
+    gameOverScreen(false);
     return;
   }
   if (points === 20300) {
-    winGame();
+    gameOverScreen(true);
     return;
   }
   movePlayer();
@@ -255,13 +265,6 @@ function movePlayer() {
 
 //* Model
 
-function winGame() {
-  alert("You won!");
-}
-
-function loseGame() {
-  alert("You lost!");
-}
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -269,17 +272,21 @@ function countPoints() {
   points += 100;
 
   if (points == 6000) {
-    enemySpeed = 250;
+    enemySpeed = 300;
     startEnemySpeed();
   }
   if (points == 12000) {
-    enemySpeed = 200;
+    enemySpeed = 250;
     startEnemySpeed();
   }
   if (points == 18000) {
-    enemySpeed = 180;
+    enemySpeed = 200;
     startEnemySpeed();
   }
+
+  highscore = Math.max(points, highscore);
+
+  localStorage.setItem("highscore", highscore);
 
   document.querySelector(
     "#enemy1"
@@ -289,9 +296,40 @@ function countPoints() {
   ).style.transition = `transform ${enemySpeed}ms linear`;
 
   document.querySelector("#score").textContent = points;
+  document.querySelector("#high-score").textContent = highscore;
 }
 
 //* View
+function startGame() {
+  const startScreen = document.querySelector("#start-screen");
+  startScreen.style.display = "none";
+
+  displayBoard();
+  startEnemySpeed();
+  tick();
+}
+
+function restartGame() {
+  window.location.reload();
+}
+
+function gameOverScreen(isWin = false) {
+  // Stop the game loop and enemy movement
+  clearInterval(enemyInterval);
+
+  const gameOverScreen = document.querySelector("#game-over");
+  const finalScore = document.querySelector("#final-score");
+  const gameOverTitle = gameOverScreen.querySelector("h1");
+
+  finalScore.textContent = points;
+  gameOverScreen.style.display = "flex";
+
+  if (isWin) {
+    gameOverTitle.textContent = "You Won!";
+  } else {
+    gameOverTitle.textContent = "Game Over";
+  }
+}
 
 function generateBoard() {
   const board = document.querySelector("#grid");

@@ -3,12 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PAC MAN</title>
+    <title>SCARY BERRY</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
   </head>
   <body>
-    <div id="grid"></div>
-    <div id="score"></div>
+    <div id="game">
+      <div id="grid"></div>
+      <div id="points">
+        <p>Score: <span id="score">0</span></p>
+        <p>High Score: <span id="high-score">0</span></p>
+      </div>
+    </div>
+    <div id="start-screen" class="screen">
+      <div class="screen-content">
+        <h1>Welcome to Scary Berry</h1>
+        <p>
+          Use arrow keys or WASD to move. Collect all coins to win and avoid the
+          naked babys!
+        </p>
+        <button id="start-button">Start Game</button>
+      </div>
+    </div>
+
+    <div id="game-over" class="screen">
+      <div class="screen-content">
+        <h1>Game Over</h1>
+        <p>Your final score:</p>
+        <div id="final-score">0</div>
+        <button id="restart-button">Play Again</button>
+      </div>
+    </div>
+
     <script type="module" src="./app.js"></script>
   </body>
 </html>
