@@ -6,6 +6,7 @@ import { aStar } from "./aStar.js";
 
 window.addEventListener("load", start);
 
+//Globale variabler
 const grid = new Grid(23, 23);
 
 let playerPosition = { row: 16, col: 11 };
@@ -13,12 +14,10 @@ let playerPosition = { row: 16, col: 11 };
 let enemyPosition1 = { row: 10, col: 10, valueBeforeStep: 4 };
 let enemyPosition2 = { row: 12, col: 12, valueBeforeStep: 4 };
 let enemySpeed = 300;
-
+let enemyInterval;
 let direction = "right";
 let oldDirection = "right";
-
 let tickCount = 0;
-
 let points = 0;
 
 function start() {
@@ -33,10 +32,8 @@ function start() {
   generateBoard();
   document.addEventListener("keydown", keyDown);
 
-  setInterval(() => {
-    moveEnemy();
-    console.log("enemySpeed i start", enemySpeed);
-  }, enemySpeed);
+  startEnemySpeed();
+
   tick();
 }
 
@@ -44,6 +41,19 @@ function start() {
 async function tick() {
   if (!playerPosition || !enemyPosition1) return;
 
+  if (
+    (playerPosition.row === enemyPosition1.row &&
+      playerPosition.col === enemyPosition1.col) ||
+    (playerPosition.row === enemyPosition2.row &&
+      playerPosition.col === enemyPosition2.col)
+  ) {
+    loseGame();
+    return;
+  }
+  if (points === 20300) {
+    winGame();
+    return;
+  }
   movePlayer();
 
   displayBoard();
@@ -53,6 +63,16 @@ async function tick() {
 
   await sleep(200);
   tick();
+}
+
+function startEnemySpeed() {
+  if (enemyInterval) {
+    clearInterval(enemyInterval);
+  }
+
+  enemyInterval = setInterval(() => {
+    moveEnemy();
+  }, enemySpeed);
 }
 
 function moveEnemy() {
@@ -65,30 +85,39 @@ function moveEnemy() {
     );
     if (path && path.length > 1) {
       const nextStep = path[1];
-      let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition1);
+      // Check if enemy2 is at the proposed next position
+      if (
+        !(
+          enemyPosition2.row === nextStep.row &&
+          enemyPosition2.col === nextStep.col
+        )
+      ) {
+        let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition1);
 
-      if (enemyPosition1.valueBeforeStep === 4) {
-        grid.set({
-          row: enemyPosition1.row,
-          col: enemyPosition1.col,
-          value: 4,
-        });
-      } else {
-        grid.set({
-          row: enemyPosition1.row,
-          col: enemyPosition1.col,
-          value: 1,
-        });
+        if (enemyPosition1.valueBeforeStep === 4) {
+          grid.set({
+            row: enemyPosition1.row,
+            col: enemyPosition1.col,
+            value: 4,
+          });
+        } else {
+          grid.set({
+            row: enemyPosition1.row,
+            col: enemyPosition1.col,
+            value: 1,
+          });
+        }
+        enemyPosition1 = {
+          row: nextStep.row,
+          col: nextStep.col,
+          valueBeforeStep: grid.get({ row: nextStep.row, col: nextStep.col }),
+        };
+        grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
+        startPeopleAnimation(enemyDirection, "#enemy1");
       }
-      enemyPosition1 = {
-        row: nextStep.row,
-        col: nextStep.col,
-        valueBeforeStep: grid.get({ row: nextStep.row, col: nextStep.col }),
-      };
-      grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
-      startPeopleAnimation(enemyDirection, "#enemy1");
     }
   }
+
   if (points > 2400) {
     const path2 = aStar(
       enemyPosition2,
@@ -98,28 +127,36 @@ function moveEnemy() {
     );
     if (path2 && path2.length > 1) {
       const nextStep = path2[1];
-      let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition2);
-      if (enemyPosition2.valueBeforeStep === 4) {
-        grid.set({
-          row: enemyPosition2.row,
-          col: enemyPosition2.col,
-          value: 4,
-        });
-      } else {
-        grid.set({
-          row: enemyPosition2.row,
-          col: enemyPosition2.col,
-          value: 1,
-        });
-      }
-      enemyPosition2 = {
-        row: nextStep.row,
-        col: nextStep.col,
-        valueBeforeStep: grid.get({ row: nextStep.row, col: nextStep.col }),
-      };
-      grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
+      // Check if enemy1 is at the proposed next position
+      if (
+        !(
+          enemyPosition1.row === nextStep.row &&
+          enemyPosition1.col === nextStep.col
+        )
+      ) {
+        let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition2);
 
-      startPeopleAnimation(enemyDirection, "#enemy2");
+        if (enemyPosition2.valueBeforeStep === 4) {
+          grid.set({
+            row: enemyPosition2.row,
+            col: enemyPosition2.col,
+            value: 4,
+          });
+        } else {
+          grid.set({
+            row: enemyPosition2.row,
+            col: enemyPosition2.col,
+            value: 1,
+          });
+        }
+        enemyPosition2 = {
+          row: nextStep.row,
+          col: nextStep.col,
+          valueBeforeStep: grid.get({ row: nextStep.row, col: nextStep.col }),
+        };
+        grid.set({ row: nextStep.row, col: nextStep.col, value: 2 });
+        startPeopleAnimation(enemyDirection, "#enemy2");
+      }
     }
   }
 
@@ -218,6 +255,13 @@ function movePlayer() {
 
 //* Model
 
+function winGame() {
+  alert("You won!");
+}
+
+function loseGame() {
+  alert("You lost!");
+}
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -225,20 +269,24 @@ function countPoints() {
   points += 100;
 
   if (points == 6000) {
-    enemySpeed = 50;
+    enemySpeed = 250;
+    startEnemySpeed();
   }
   if (points == 12000) {
     enemySpeed = 200;
-
-    console.log("enemySpeed", enemySpeed);
+    startEnemySpeed();
   }
   if (points == 18000) {
-    enemySpeed = 100;
-    console.log("enemySpeed", enemySpeed);
+    enemySpeed = 180;
+    startEnemySpeed();
   }
 
-  //document.querySelector("#enemy1").style.transition = `transform ${enemySpeed}ms linear`;
-  //document.querySelector("#enemy2").style.transition = `transform ${enemySpeed}ms linear`;
+  document.querySelector(
+    "#enemy1"
+  ).style.transition = `transform ${enemySpeed}ms linear`;
+  document.querySelector(
+    "#enemy2"
+  ).style.transition = `transform ${enemySpeed}ms linear`;
 
   document.querySelector("#score").textContent = points;
 }
@@ -291,15 +339,21 @@ function displayBoard() {
 
       // Update positions
       if (character) {
-        character.style.transform = `translate(${playerPosition.col * cellSize}px, ${playerPosition.row * cellSize}px)`;
+        character.style.transform = `translate(${
+          playerPosition.col * cellSize
+        }px, ${playerPosition.row * cellSize}px)`;
       }
 
       if (enemy1) {
-        enemy1.style.transform = `translate(${enemyPosition1.col * cellSize}px, ${enemyPosition1.row * cellSize}px)`;
+        enemy1.style.transform = `translate(${
+          enemyPosition1.col * cellSize
+        }px, ${enemyPosition1.row * cellSize}px)`;
       }
 
       if (enemy2) {
-        enemy2.style.transform = `translate(${enemyPosition2.col * cellSize}px, ${enemyPosition2.row * cellSize}px)`;
+        enemy2.style.transform = `translate(${
+          enemyPosition2.col * cellSize
+        }px, ${enemyPosition2.row * cellSize}px)`;
       }
     }
   }
