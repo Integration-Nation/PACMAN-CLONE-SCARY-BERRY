@@ -10,26 +10,19 @@ export default class Queue {
     this.items = [];
   }
 
-  // ========================================
-  // metoder der behandler data objekter
-  // ========================================
   includes(element) {
     return this.items.includes(element);
   }
 
   update(element, newPriority) {
-    // Find elementets index
     const index = this.items.findIndex((item) => item.element.row === element.row && item.element.col === element.col);
 
     if (index !== -1) {
-      // Fjern elementet
       this.items.splice(index, 1);
-      // Genindsæt det med ny prioritet
       this.enqueue(element, newPriority);
     }
   }
 
-  // tilføjer et element til slutningen af listen
   enqueue(element, priority) {
     let queueElement = new QueueElement(element, priority);
     let contain = false;
@@ -45,7 +38,6 @@ export default class Queue {
     }
   }
 
-  // returnerer elementet på plads nummer index
   get(index) {
     const node = this.nodeAt(index);
     if (node === null) {
@@ -54,7 +46,6 @@ export default class Queue {
     return node.data;
   }
 
-  // returnerer det første element i listen
   front() {
     if (this.isEmpty()) {
       return "Queue is empty";
@@ -66,7 +57,6 @@ export default class Queue {
     return this.items.length == 0;
   }
 
-  // fjerner det første element i listen - og returnerer elementet
   dequeue() {
     if (this.isEmpty()) {
       return "Queue is empty";
@@ -74,11 +64,6 @@ export default class Queue {
     return this.items.shift();
   }
 
-  // ========================================
-  // metoder til at operere direkte på nodes
-  // ========================================
-
-  // returnerer noden på plads nummer index
   nodeAt(index) {
     let current = this.head;
     let count = 0;
@@ -92,15 +77,6 @@ export default class Queue {
     return null;
   }
 
-  // ========================================
-  // metoder der omhandler hele listen
-  // ========================================
-
-  // ========================================
-  // Udvikling, testing og debugging
-  // ========================================
-
-  // der console.log'er alle data-elementer i listen
   dumpList() {
     let str = "";
     for (let i = 0; i < this.items.length; i++) {

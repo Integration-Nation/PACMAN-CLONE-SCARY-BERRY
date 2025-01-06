@@ -1,8 +1,5 @@
 import Queue from "./priorityQueue.js";
 
-const start = { row: 0, col: 0 };
-const end = { row: 9, col: 9 };
-
 export function aStar(start, goal, getNeighbours, getValue) {
   function heuristic(a, b) {
     return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);

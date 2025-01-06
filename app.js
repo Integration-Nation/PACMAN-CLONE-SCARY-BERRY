@@ -38,11 +38,8 @@ function start() {
   generateBoard();
   document.addEventListener("keydown", keyDown);
   document.querySelector("#start-button").addEventListener("click", startGame);
-  document
-    .querySelector("#restart-button")
-    .addEventListener("click", restartGame);
+  document.querySelector("#restart-button").addEventListener("click", restartGame);
 
-  // Show start screen
   document.querySelector("#start-screen").style.display = "flex";
   displayBoard();
 }
@@ -51,12 +48,7 @@ function start() {
 async function tick() {
   if (!playerPosition || !enemyPosition1) return;
 
-  if (
-    (playerPosition.row === enemyPosition1.row &&
-      playerPosition.col === enemyPosition1.col) ||
-    (playerPosition.row === enemyPosition2.row &&
-      playerPosition.col === enemyPosition2.col)
-  ) {
+  if ((playerPosition.row === enemyPosition1.row && playerPosition.col === enemyPosition1.col) || (playerPosition.row === enemyPosition2.row && playerPosition.col === enemyPosition2.col)) {
     gameOverScreen(false);
     return;
   }
@@ -69,7 +61,6 @@ async function tick() {
   displayBoard();
 
   tickCount++;
-  // console.log("tickCount", tickCount);
 
   await sleep(200);
   tick();
@@ -95,13 +86,7 @@ function moveEnemy() {
     );
     if (path && path.length > 1) {
       const nextStep = path[1];
-      // Check if enemy2 is at the proposed next position
-      if (
-        !(
-          enemyPosition2.row === nextStep.row &&
-          enemyPosition2.col === nextStep.col
-        )
-      ) {
+      if (!(enemyPosition2.row === nextStep.row && enemyPosition2.col === nextStep.col)) {
         let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition1);
 
         if (enemyPosition1.valueBeforeStep === 4) {
@@ -137,13 +122,7 @@ function moveEnemy() {
     );
     if (path2 && path2.length > 1) {
       const nextStep = path2[1];
-      // Check if enemy1 is at the proposed next position
-      if (
-        !(
-          enemyPosition1.row === nextStep.row &&
-          enemyPosition1.col === nextStep.col
-        )
-      ) {
+      if (!(enemyPosition1.row === nextStep.row && enemyPosition1.col === nextStep.col)) {
         let enemyDirection = calculateEnemyDirection(nextStep, enemyPosition2);
 
         if (enemyPosition2.valueBeforeStep === 4) {
@@ -288,12 +267,8 @@ function countPoints() {
 
   localStorage.setItem("highscore", highscore);
 
-  document.querySelector(
-    "#enemy1"
-  ).style.transition = `transform ${enemySpeed}ms linear`;
-  document.querySelector(
-    "#enemy2"
-  ).style.transition = `transform ${enemySpeed}ms linear`;
+  document.querySelector("#enemy1").style.transition = `transform ${enemySpeed}ms linear`;
+  document.querySelector("#enemy2").style.transition = `transform ${enemySpeed}ms linear`;
 
   document.querySelector("#score").textContent = points;
   document.querySelector("#high-score").textContent = highscore;
@@ -314,7 +289,6 @@ function restartGame() {
 }
 
 function gameOverScreen(isWin = false) {
-  // Stop the game loop and enemy movement
   clearInterval(enemyInterval);
 
   const gameOverScreen = document.querySelector("#game-over");
@@ -375,23 +349,16 @@ function displayBoard() {
       const enemy1 = document.querySelector("#enemy1");
       const enemy2 = document.querySelector("#enemy2");
 
-      // Update positions
       if (character) {
-        character.style.transform = `translate(${
-          playerPosition.col * cellSize
-        }px, ${playerPosition.row * cellSize}px)`;
+        character.style.transform = `translate(${playerPosition.col * cellSize}px, ${playerPosition.row * cellSize}px)`;
       }
 
       if (enemy1) {
-        enemy1.style.transform = `translate(${
-          enemyPosition1.col * cellSize
-        }px, ${enemyPosition1.row * cellSize}px)`;
+        enemy1.style.transform = `translate(${enemyPosition1.col * cellSize}px, ${enemyPosition1.row * cellSize}px)`;
       }
 
       if (enemy2) {
-        enemy2.style.transform = `translate(${
-          enemyPosition2.col * cellSize
-        }px, ${enemyPosition2.row * cellSize}px)`;
+        enemy2.style.transform = `translate(${enemyPosition2.col * cellSize}px, ${enemyPosition2.row * cellSize}px)`;
       }
     }
   }
@@ -409,10 +376,4 @@ function startBerryAnimation(direction) {
   const visualPlayer = document.querySelector("#character");
   visualPlayer.setAttribute("class", "");
   visualPlayer.classList.add(`berryMove${direction}`);
-}
-
-function stopMovementAnimation(direction) {
-  const visualPlayer = document.querySelector("#character");
-  visualPlayer.setAttribute("class", "");
-  visualPlayer.classList.add(`playerLook${direction}`);
 }

@@ -91,7 +91,7 @@ body {
 .path {
   background-image: url("./assets/32x32.png");
   background-position: calc(-1 * 32px) calc(-2 * 32px);
-  /* filter: saturate(0.5); */
+ 
 }
 
 .wall {
@@ -131,7 +131,7 @@ body {
 
 #enemy1 {
   filter: saturate(2.5);
-  /* filter: brightness(0.8); */
+ 
 }
 
 #character,
